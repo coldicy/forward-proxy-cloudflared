@@ -217,4 +217,27 @@ cloudflared  | INF Registered tunnel connection connIndex=1 connection=6d68b9c3-
 
 #### 关于域名嗅探
 
-经过验证使用 tun 不是必须要配合域名嗅探也能使域名规则生效。而且即便使用域名嗅探也需要注意在当前场景下最好指定 `override-destination: false` （需显式指定，默认是 true），否则可能影响 tunnel 服务地址指向本地 nginx （如 docker-host:80， 宿主机上的 80 有 nginx）时的正常代理过程。发生影响的具体位置不确定，但是如果 tunnel 服务地址只是单纯指向本地服务（如 docker-host:8080， 此为正常服务）而不是指向本地 nginx 后通过 nginx 代理的话即使 `override-destination: true` 也没有问题。
+```yaml
+# 官网配置片段示例
+sniffer:
+  enable: false
+  # 是否使用嗅探结果作为实际访问，默认为 true
+  override-destination: false
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+```
+
+经过验证使用 tun 不是必须要配合域名嗅探也能使域名规则生效。而且即便使用域名嗅探也需要注意在当前场景下最好指定 `override-destination: false` （需显式指定，默认是 true）。否则可能影响 tunnel 回源本地服务的过程。假设你有一个 tunnel 服务配置如下：
+
+```text
+完整主机名：a.b.com
+服务 URL：http://docker-host:8080
+```
+
+当你在访问 `a.b.com` ，`cloudflared` 收到后，根据配置的服务 URL 回源，准备把流量转发给`originService=http://docker-host:80`。此时这条在经过 tun 时，发现 HTTP 请求里的 `Host: a.b.com`，如果此时 `override-destination: true` 处于开启状态，mihomo 会把原本要去本地服务 `http://docker-host:80` 的地址改写成 `http://a.b.com:80` ，最终访问将偏离预期。
