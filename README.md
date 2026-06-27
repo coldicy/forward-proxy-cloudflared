@@ -217,4 +217,4 @@ cloudflared  | INF Registered tunnel connection connIndex=1 connection=6d68b9c3-
 
 #### 关于域名嗅探
 
-经过验证使用 tun 不是必须要配合域名嗅探也能使域名规则生效。而且即便使用域名嗅探也需要注意在当前场景下最好关闭 `override-destination: false` （需显式指定，默认是 true），否则可能影响 tunnel 服务地址指向本地 nginx （如 docker-host:80， 宿主机上的 80 有 nginx）时的正常代理过程。发生影响的具体位置不确定，但是如果 tunnel 服务地址只是单纯指向本地服务（如 docker-host:8080， 此为正常服务）而不是指向本地 nginx 后通过 nginx 代理的话即使 `override-destination: true` 也没有问题。
+经过验证使用 tun 不是必须要配合域名嗅探也能使域名规则生效。而且即便使用域名嗅探也需要注意在当前场景下最好指定 `override-destination: false` （需显式指定，默认是 true），否则可能影响 tunnel 服务地址指向本地 nginx （如 docker-host:80， 宿主机上的 80 有 nginx）时的正常代理过程。发生影响的具体位置不确定，但是如果 tunnel 服务地址只是单纯指向本地服务（如 docker-host:8080， 此为正常服务）而不是指向本地 nginx 后通过 nginx 代理的话即使 `override-destination: true` 也没有问题。
