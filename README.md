@@ -240,4 +240,4 @@ sniffer:
 服务 URL：http://docker-host:8080
 ```
 
-当你在访问 `a.b.com` ，`cloudflared` 收到后，根据配置的服务 URL 回源，准备把流量转发给`originService=http://docker-host:80`。此时这条在经过 tun 时，发现 HTTP 请求里的 `Host: a.b.com`，如果此时 `override-destination: true` 处于开启状态，mihomo 会把原本要去本地服务 `http://docker-host:8080` 的地址改写成 `http://a.b.com:8080` ，最终访问将偏离预期。
+当你在访问 `a.b.com` ，`cloudflared` 收到后，根据配置的服务 URL 回源，准备把流量转发给`originService=http://docker-host:8080`。此时这条在经过 tun 时，发现 HTTP 请求里的 `Host: a.b.com`，如果此时 `override-destination: true` 处于开启状态，mihomo 会把原本要去本地服务 `http://docker-host:8080` 的地址改写成 `http://a.b.com:8080` ，最终访问将偏离预期。
